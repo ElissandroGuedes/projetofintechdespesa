@@ -13,10 +13,35 @@
                     <a class="nav-link" href="despesa?acao=listar">Despesa</a>
                 </li>
             </ul>
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+
+
+            <c:if test="${empty user}">
+
+                <span class="navbar-text text-bg-danger" style="margin-right: 10px">
+                    ${erro}
+                </span>
+
+                <form class="row g-3" action="login" method="post">
+                    <div class="col-auto">
+                        <label for="inputEmail2" class="visually-hidden">Email</label>
+                        <input type="text" class="form-control" id="inptEmail2" placeholder="email@examplo.com" name="email">
+                    </div>
+                    <div class="col-auto">
+                        <label for="inputPassword2" class="visually-hidden">Password</label>
+                        <input type="password" class="form-control" id="inputPassword2" placeholder="senha" name="senha">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary mb-3">Confirm identity</button>
+                    </div>
+                </form>
+
+            </c:if>
+            <c:if test="${not empty user}">
+                ${user}
+                <a href="login" class="btn btn-outline-primary my-2 my-sm-0">Sair</a>
+            </c:if>
+
+
         </div>
     </div>
 </nav>
