@@ -198,4 +198,53 @@ public class OracleDespesaDao implements DespesaDao {
         }
         return lista;
     }
-}
+
+    @Override
+    public List<Despesa> buscarPorPeriodo(LocalDate inicio, LocalDate fim) {
+
+            List<Despesa> lista = new ArrayList<>();
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+            Connection conexao = null;
+
+            try {
+                conexao = ConnectionManager.getInstance().getConnection();
+
+                String sql = "SELECT * FROM TB_DESPESA INNER JOIN TB_CREDORES ON TB_DESPESA.cod_credor = TB_CREDORES.cod_credor WHERE dt_despesa BETWEEN ? AND ?";
+
+                stmt = conexao.prepareStatement(sql);
+
+                stmt.setDate(1, java.sql.Date.valueOf(inicio));
+                stmt.setDate(2, java.sql.Date.valueOf(fim));
+
+                rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    int codigo = rs.getInt("cod_despesa");
+                    String descricao = rs.getString("descricao");
+                    double valor = rs.getDouble("valor");
+                    LocalDate dtDespesa = rs.getDate("dt_despesa").toLocalDate();
+                    String categoria = rs.getString("categoria");
+                    int codigoCredor = rs.getInt("cod_credor");
+                    String nomeCredor = rs.getString("nome");
+
+                    Credores credores = new Credores(codigoCredor,nomeCredor);
+                    Despesa despesa = new Despesa(codigo, descricao, valor, dtDespesa, categoria);
+                    despesa.setCredores(credores);
+
+                    lista.add(despesa);
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try { if (rs != null) rs.close(); } catch (Exception e) { e.printStackTrace(); }
+                try { if (stmt != null) stmt.close(); } catch (Exception e) { e.printStackTrace(); }
+                try { if (conexao != null) conexao.close(); } catch (Exception e) { e.printStackTrace(); }
+            }
+
+            return lista;
+        }
+
+    }
+

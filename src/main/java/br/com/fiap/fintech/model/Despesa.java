@@ -47,6 +47,14 @@ public class Despesa {
         this.valor = valor;
     }
 
+    public java.util.Date getDataDespesaAsDate() {
+        if (this.dataDespesa != null) {
+            return java.util.Date.from(this.dataDespesa.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
+
     public LocalDate getDataDespesa() {
         return dataDespesa;
     }

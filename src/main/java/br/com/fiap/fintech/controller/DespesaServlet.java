@@ -15,7 +15,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 
 @WebServlet("/despesa")
 public class DespesaServlet extends HttpServlet {
@@ -46,9 +48,53 @@ public class DespesaServlet extends HttpServlet {
             case "excluir":
                 excluir(req, resp);
                 break;
+            case "filtrar":
+                filtrar(req, resp);
         }
 
 
+    }
+
+
+    private void filtrar (HttpServletRequest req,HttpServletResponse resp) throws ServletException, IOException {
+
+        String inicioStr = req.getParameter("inicio");
+        String fimStr = req.getParameter("fim");
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDate inicio = null;
+        LocalDate fim = null;
+
+        if (inicioStr != null && !inicioStr.isEmpty()) {
+            try {
+                inicio = LocalDate.parse(inicioStr, formatter);
+            }catch (java.time.format.DateTimeParseException e) {
+                System.err.println("Erro ao converter data de início: " + inicioStr + ". Erro: " + e.getMessage());
+                req.setAttribute("errorMessage", "Formato de data de início inválido. O formato esperado é AAAA-MM-DD.");
+                req.getRequestDispatcher("historico-despesa.jsp").forward(req, resp);
+                return;
+            }
+        }
+
+        if (fimStr != null && !fimStr.isEmpty()) {
+            try {
+                fim = LocalDate.parse(fimStr, formatter);
+            } catch (java.time.format.DateTimeParseException e) {
+                System.err.println("Erro ao converter data de fim: " + fimStr + " - " + e.getMessage());
+                req.setAttribute("errorMessage", "Formato de data de fim inválido. O formato esperado é AAAA-MM-DD.");
+                req.getRequestDispatcher("historico-despesa.jsp").forward(req, resp);
+                return;
+            }
+        }
+
+        List<Despesa> lista = dao.buscarPorPeriodo(inicio, fim);
+
+        carregarOpcoesCredores(req);
+
+        req.setAttribute("listaDespesas", lista);
+        req.getRequestDispatcher("historico-despesa.jsp").forward(req, resp);
     }
 
     private void excluir(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -58,11 +104,11 @@ public class DespesaServlet extends HttpServlet {
         try {
             dao.remover(codigo);
             req.setAttribute("mensagem", "Despesa removida com sucesso!");
-        }catch (DBExecption e){
+        } catch (DBExecption e) {
             e.printStackTrace();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            req.setAttribute("erro","Erro ao excluir despesa!");
+            req.setAttribute("erro", "Erro ao excluir despesa!");
         }
 
         listar(req, resp);
@@ -143,9 +189,10 @@ public class DespesaServlet extends HttpServlet {
             case "abrir-form-edicao":
                 abrirForm(req, resp);
                 break;
-                case "abrir-form-cadastro":
-                    abrirFormCadastro(req, resp);
-                    break;
+            case "abrir-form-cadastro":
+                abrirFormCadastro(req, resp);
+                break;
+
         }
 
 
@@ -157,7 +204,7 @@ public class DespesaServlet extends HttpServlet {
     }
 
     private void carregarOpcoesCredores(HttpServletRequest req) {
-        List<Credores>lista = credoresDao.listar();
+        List<Credores> lista = credoresDao.listar();
         req.setAttribute("credores", lista);
     }
 
@@ -174,4 +221,5 @@ public class DespesaServlet extends HttpServlet {
         req.setAttribute("despesas", lista);
         req.getRequestDispatcher("lista-despesa.jsp").forward(req, resp);
     }
+
 }

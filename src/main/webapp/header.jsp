@@ -12,6 +12,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="despesa?acao=listar">Despesa</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="historico-despesa.jsp">Historico</a>
+                </li>
             </ul>
 
 
@@ -27,11 +30,11 @@
                         <input type="text" class="form-control" id="inptEmail2" placeholder="email@examplo.com" name="email">
                     </div>
                     <div class="col-auto">
-                        <label for="inputPassword2" class="visually-hidden">Password</label>
+                        <label for="inputPassword2" class="visually-hidden">Senha</label>
                         <input type="password" class="form-control" id="inputPassword2" placeholder="senha" name="senha">
                     </div>
                     <div class="col-auto">
-                        <button type="submit" class="btn btn-primary mb-3">Confirm identity</button>
+                        <button type="submit" class="btn btn-primary mb-3">Entrar</button>
                     </div>
                 </form>
 

@@ -17,5 +17,6 @@ public class CredoresDaoTeste {
         for (Credores item : lista) {
            System.out.println( item.getCdCredor() + " " + item.getNome());
        }
+
     }
 }
